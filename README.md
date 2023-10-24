@@ -37,11 +37,19 @@ BLDB = beeline distance from the beginning of the line​
 BLDE = beeline distance from the end of the line​
 
 ## Installation
-flutter pub get
+`git clone git@github.com:Teleste-Official/ERFT.git erft`
 
-flutter create --platforms=linux .
+`cd erft/`
 
-flutter build linux --release
+`flutter pub get`
+
+`flutter create --platforms=linux .`
+
+`flutter build linux --release`
+
+`cd build/linux/x64/release/bundle/`
+
+`./erft`
 
 
 
