@@ -92,7 +92,7 @@ class _DrawingToolState extends State<DrawingTool> {
         : valuesProvider.crosspoints
             .map((cp) => crosspointPosition(cp, polylineProvider))
             .toList(growable: false);
-    
+
     return Stack(
       children: [
         GestureDetector(
@@ -106,23 +106,25 @@ class _DrawingToolState extends State<DrawingTool> {
               });
             }
           },
-          child: MouseRegion(
-            onHover: (event) => onHover(event,
-                onLine: (position) => hoverPosProvider.value = position,
-                onDistant: () => hoverPosProvider.value = null),
-            child: RepaintBoundary(
-              child: Container(
-                color: Colors.transparent,
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: CustomPaint(
-                  painter: MyCustomPainter(
-                      points: _clearPressed
-                          ? []
-                          : (_drawing ? _path.points : polylineProvider.points),
-                      crossPoints: crosspoints),
-                ),
-              ),
+          child: RepaintBoundary(
+            child: Container(
+              color: Colors.transparent,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: CustomPaint(
+                      painter: MyCustomPainter(
+                          points: _clearPressed
+                              ? []
+                              : (_drawing
+                                  ? _path.points
+                                  : polylineProvider.points),
+                          crossPoints: crosspoints),
+                      child: _clearPressed ? const SizedBox.shrink() : MouseRegion(
+                        onHover: (event) => onHover(event,
+                            onLine: (position) =>
+                                hoverPosProvider.value = position,
+                            onDistant: () => hoverPosProvider.value = null),
+                      )),
             ),
           ),
         ),
@@ -155,6 +157,7 @@ class _DrawingToolState extends State<DrawingTool> {
               ? ElevatedButton(
                   onPressed: () {
                     setState(() {
+                      hoverPosProvider.value = null;
                       _clearPressed = !_clearPressed;
                     });
                   },
