@@ -19,9 +19,39 @@ class ValuesProvider {
 
   List<String> get names {
     return functions.map((func) => func.name).toList(growable: false);
+  } 
+
+  double get xRange {
+    return points.isEmpty ? double.nan : points.keys.last;
   }
 
-  // key: x-value, value: y-values
+  double get yMax {
+    var result = double.nan;
+    points.forEach((_, list) {
+      result = list.fold(
+          result,
+          (previousValue, element) => element.isFinite &&
+                  (element > previousValue || previousValue.isNaN)
+              ? element
+              : previousValue);
+    });
+    return result;
+  }
+
+  double get yMin {
+    var result = double.nan;
+    points.forEach((_, list) {
+      result = list.fold(
+          result,
+          (previousValue, element) =>
+              element < previousValue || previousValue.isNaN
+                  ? element
+                  : previousValue);
+    });
+    return result;
+  }
+
+   // key: x-value, value: y-values
   Map<double, List<double>> _calculatePoints() {
     final Map<double, List<double>> result = {};
     for (int i = 0; i < line.length; i++) {
@@ -68,36 +98,6 @@ class ValuesProvider {
     return result..sort();
   }
 
-  double get xRange {
-    return points.isEmpty ? double.nan : points.keys.last;
-  }
-
-  double get yMax {
-    var result = double.nan;
-    points.forEach((_, list) {
-      result = list.fold(
-          result,
-          (previousValue, element) => element.isFinite &&
-                  (element > previousValue || previousValue.isNaN)
-              ? element
-              : previousValue);
-    });
-    return result;
-  }
-
-  double get yMin {
-    var result = double.nan;
-    points.forEach((_, list) {
-      result = list.fold(
-          result,
-          (previousValue, element) =>
-              element < previousValue || previousValue.isNaN
-                  ? element
-                  : previousValue);
-    });
-    return result;
-  }
-
   String _calculateVariables(int index, String function) {
     function = function.replaceAll('BLDB', line.bldb(index).toString());
     function = function.replaceAll('BLDE', line.blde(index).toString());
@@ -108,8 +108,8 @@ class ValuesProvider {
   }
 
   double _calculate(int index, String function) {
-    function = _calculateVariables(index, function);
-    return function.interpret().toDouble();
+    final valueString = _calculateVariables(index, function);
+    return valueString.interpret().toDouble();
   }
 
   List<double> yValues(int index) {
@@ -117,6 +117,7 @@ class ValuesProvider {
   }
 
 // https://stackoverflow.com/questions/385305/efficient-maths-algorithm-to-calculate-intersections
+
   List<double>? _intersection(
       double x0, double x1, double y0, double y1, double y2, double y3) {
     final dx = x0 - x1;

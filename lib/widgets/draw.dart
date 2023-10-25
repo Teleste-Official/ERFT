@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -14,18 +13,23 @@ import 'valuepopup.dart';
 class DrawingTool extends StatefulWidget {
   /// Maximum distance between cursor and line where [ValuePopUp] is shown
   static const hoverDistance = 10.0;
-  const DrawingTool({
-    super.key,
-  });
+  final List<Offset>? imported;
+  const DrawingTool({super.key, this.imported});
 
   @override
   State<DrawingTool> createState() => _DrawingToolState();
 }
 
 class _DrawingToolState extends State<DrawingTool> {
-  final _path = PolyLine([]);
+  final PolyLine _path = PolyLine([]);
   bool _drawing = false;
   bool _clearPressed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _path.points = widget.imported ?? [];
+  }
 
   void onHover(PointerHoverEvent event,
       {required Function(int position) onLine, required Function onDistant}) {
@@ -41,7 +45,8 @@ class _DrawingToolState extends State<DrawingTool> {
   }
 
   void onPanStart(DragStartDetails details) {
-    if (_path.points.isNotEmpty) return;
+    // Drawing allowed only when canvas is clear.
+    if (_path.points.isNotEmpty && !_clearPressed) return;
     final box = context.findRenderObject() as RenderBox;
     final point = box.globalToLocal(details.globalPosition);
     setState(() {
@@ -74,30 +79,20 @@ class _DrawingToolState extends State<DrawingTool> {
     return Offset(x, y);
   }
 
-  void setPath(List<Offset> points) {
-    setState(() {
-      _path.points.clear();
-      _path.points.addAll(points);
-      _clearPressed = false;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final polylineProvider = context.watch<PolyLine>();
     final hoverPosProvider = context.watch<HoverPosition>();
     final valuesProvider = context.watch<ValuesProvider>();
-    if (polylineProvider.imported) {
-      setPath(polylineProvider.points);
-      polylineProvider.imported = false;
-    }
-    final crosspoints = listEquals(_path.points, polylineProvider.points)
-        ? valuesProvider.crosspoints
-            .map((cp) => crosspointPosition(cp, _path))
-            .toList(growable: false)
-        : <Offset>[];
     final values = valuesProvider.points;
     final hoverPos = hoverPosProvider.value;
+
+    final crosspoints = _clearPressed || _drawing
+        ? <Offset>[]
+        : valuesProvider.crosspoints
+            .map((cp) => crosspointPosition(cp, polylineProvider))
+            .toList(growable: false);
+    
     return Stack(
       children: [
         GestureDetector(
@@ -106,8 +101,7 @@ class _DrawingToolState extends State<DrawingTool> {
           onPanEnd: (_) {
             if (_path.points.isNotEmpty) {
               setState(() {
-                // Set copy of line to provider
-                polylineProvider.points = List.of(_path.points);
+                polylineProvider.points = _path.points;
                 _drawing = false;
               });
             }
@@ -123,7 +117,10 @@ class _DrawingToolState extends State<DrawingTool> {
                 height: MediaQuery.of(context).size.height,
                 child: CustomPaint(
                   painter: MyCustomPainter(
-                      points: _path.points, crossPoints: crosspoints),
+                      points: _clearPressed
+                          ? []
+                          : (_drawing ? _path.points : polylineProvider.points),
+                      crossPoints: crosspoints),
                 ),
               ),
             ),
@@ -158,11 +155,6 @@ class _DrawingToolState extends State<DrawingTool> {
               ? ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      if (!_clearPressed) {
-                        _path.points.clear();
-                      } else {
-                        _path.points.addAll(polylineProvider.points);
-                      }
                       _clearPressed = !_clearPressed;
                     });
                   },

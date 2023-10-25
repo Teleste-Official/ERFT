@@ -48,7 +48,9 @@ class ImportScreen extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: ElevatedButton.icon(
               onPressed: () async {
-                final path = await importPath();
+/*             use for debugging
+               importProvider.load('example.json');
+ */                final path = await importPath();
                 if (path == null) return;
                 importProvider.load(path);
               },

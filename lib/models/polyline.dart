@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 
 class PolyLine extends ChangeNotifier {
   List<Offset> _points;
-  bool imported;
 
-  PolyLine(this._points, {this.imported = false});
+  PolyLine(this._points);
 
   set points(List<Offset> newPath) {
     _points = newPath;
@@ -32,13 +31,14 @@ class PolyLine extends ChangeNotifier {
   factory PolyLine.fromJson(Map<String, dynamic> json) {
     return PolyLine(List.from(json['polyline'])
         .map((e) => Offset(e['x'] as double, e['y'] as double))
-        .toList())..imported = true;
+        .toList());
   }
 
   static double distanceBetweenPoints(Offset p1, Offset p2) {
     return sqrt(pow((p1.dx - p2.dx), 2) + pow((p1.dy - p2.dy), 2));
   }
 
+  /// Retuns index in [points] that is closest to [p] and distance.
   static List<dynamic> closestTo(Offset p, List<Offset> points) {
     var distances =
         points.map((point) => distanceBetweenPoints(point, p)).toList();
