@@ -41,7 +41,7 @@ BLDE = beeline distance from the end of the line​
 
 `cd erft/`
 
-`flutter pub get`
+`flutter pub get --no-example`
 
 `flutter create --platforms=linux .`
 
