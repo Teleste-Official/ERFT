@@ -27,6 +27,8 @@ multiplication
 
 division
 
+exponents
+
 ### Variables
 LDB = distance along the line from the beginning of the line​
 
