@@ -25,7 +25,8 @@ class Func {
   /// + substraction (-)
   /// + multiplication (*)
   /// + division (/)
-  static const String operations = r'[\+\*\-\/]';
+  /// + exponent (^)
+  static const String operations = r'[\+\*\-\/\^]';
 
   /// Returns null if succesfull, error message if failed
   static String? _operationsCheck(String string) {
@@ -56,7 +57,7 @@ class Func {
       return false;
     }
 
-    final illegalChar = string.replaceAll(RegExp(r'[A-Z0-9\+\*-/()]'), '');
+    final illegalChar = string.replaceAll(RegExp(r'[A-Z0-9\+\*\^\-\./()]'), '');
     if (illegalChar.isNotEmpty) {
       if (onError != null) {
         onError('Illegal character: $illegalChar');

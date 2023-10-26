@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'models/hover_position.dart';
-import 'models/import.dart';
+import 'providers/import.dart';
 import 'models/polyline.dart';
 import 'providers/function.dart';
 import 'providers/values.dart';
@@ -24,18 +24,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => Import()),
         ChangeNotifierProxyProvider<Import, FunctionProvider>(
           create: (_) => FunctionProvider([]),
-          update: (_, Import value, previous) {
-            final json = value.json;
-            if (json == null) return previous ?? FunctionProvider([]);
-            return FunctionProvider.fromJson(value.json!);
+          update: (_, Import import, previous) {            
+            return import.functions ?? previous ?? FunctionProvider([]);
           },
         ),
         ChangeNotifierProxyProvider<Import, PolyLine>(
           create: (_) => PolyLine([]),
-          update: (_, Import value, previous) {
-            final json = value.json;
-            if (json == null) return previous ?? PolyLine([]);
-            return PolyLine.fromJson(value.json!);
+          update: (_, Import import, previous) {            
+            return import.line ?? previous ?? PolyLine([]);
           },
         ),
         ChangeNotifierProvider(create: (_) => HoverPosition()),
@@ -63,7 +59,8 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<Import>();
+    // re-render on import
+    final provider = context.watch<Import>();   
     return Column(
       children: [
         Expanded(
@@ -76,10 +73,9 @@ class MainScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                       decoration: BoxDecoration(border: Border.all()),
-                      child: DrawingTool(key: GlobalKey(),
-                          imported: provider.json != null
-                              ? PolyLine.fromJson(provider.json!).points
-                              : null),
+                      child: DrawingTool(
+                          key: GlobalKey(),
+                          imported: provider.line?.points),
                     )),
               ),
               Expanded(

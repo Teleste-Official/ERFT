@@ -112,27 +112,22 @@ class _DrawingToolState extends State<DrawingTool> {
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               child: CustomPaint(
-                      painter: MyCustomPainter(
-                          points: _clearPressed
-                              ? []
-                              : (_drawing
-                                  ? _path.points
-                                  : polylineProvider.points),
-                          crossPoints: crosspoints),
-                      child: _clearPressed ? const SizedBox.shrink() : MouseRegion(
-                        onHover: (event) => onHover(event,
-                            onLine: (position) =>
-                                hoverPosProvider.value = position,
-                            onDistant: () => hoverPosProvider.value = null),
-                      )),
+                  painter: PathPainter(
+                      points: _clearPressed
+                          ? []
+                          : (_drawing ? _path.points : polylineProvider.points),
+                      crossPoints: crosspoints),
+                  child: _clearPressed
+                      ? const SizedBox.shrink()
+                      : MouseRegion(
+                          onHover: (event) => onHover(event,
+                              onLine: (position) =>
+                                  hoverPosProvider.value = position,
+                              onDistant: () => hoverPosProvider.value = null),
+                        )),
             ),
           ),
-        ),
-        for (Offset offset in crosspoints)
-          Positioned(
-              top: offset.dy - 10.0,
-              left: offset.dx + 10.0,
-              child: Text('cp${crosspoints.indexOf(offset) + 1}')),
+        ),        
         Positioned(
             top: hoverPos != null && _path.points.length > hoverPos
                 ? _path.points[hoverPos].dy - 10.0
@@ -170,11 +165,10 @@ class _DrawingToolState extends State<DrawingTool> {
   }
 }
 
-class MyCustomPainter extends CustomPainter {
+class PathPainter extends CustomPainter {
   final List<Offset> points;
   final List<Offset?> crossPoints;
-  MyCustomPainter(
-      {super.repaint, required this.points, required this.crossPoints});
+  PathPainter({super.repaint, required this.points, required this.crossPoints});
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint();
@@ -192,9 +186,17 @@ class MyCustomPainter extends CustomPainter {
         canvas.drawLine(startPoint, endPoint, paint);
       }
     }
-    for (final cp in crossPoints) {
-      if (cp != null) {
-        canvas.drawCircle(cp, 5.0, paint);
+    for (int i = 0; i < crossPoints.length; i++) {
+      if (crossPoints[i] != null) {
+        canvas.drawCircle(crossPoints[i]!, 5.0, paint);
+        final textPainter = TextPainter(
+            textDirection: TextDirection.ltr,
+            text: TextSpan(
+                text: 'cp${i + 1}',
+                style: const TextStyle(color: Colors.black)));
+        textPainter.layout();
+        textPainter.paint(canvas,
+            Offset(crossPoints[i]!.dx - (textPainter.width / 2), crossPoints[i]!.dy + 4.0));
       }
     }
   }

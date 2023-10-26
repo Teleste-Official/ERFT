@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/import.dart';
+import '../providers/import.dart';
 import '../models/polyline.dart';
 import '../providers/function.dart';
 
@@ -48,11 +48,19 @@ class ImportScreen extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: ElevatedButton.icon(
               onPressed: () async {
-/*             use for debugging
-               importProvider.load('example.json');
- */                final path = await importPath();
+                final path = await importPath();
                 if (path == null) return;
-                importProvider.load(path);
+                importProvider.load(path, (error) {
+                  String? errorMessage;
+                  if (error is PathNotFoundException) {
+                    errorMessage = 'File not found.';
+                  } else if (error is FormatException) {
+                    errorMessage = 'File is not a valid json object.';
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content:
+                          Text('Couldn\'t read from file: $errorMessage')));
+                });
               },
               icon: const Icon(Icons.file_download),
               label: const Text('Import')),

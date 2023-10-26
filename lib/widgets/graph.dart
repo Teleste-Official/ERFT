@@ -6,13 +6,13 @@ import '../providers/values.dart';
 import '../utilities/colors.dart';
 import 'valuepopup.dart';
 
-class MyCustomPainter extends CustomPainter {
+class GraphPainter extends CustomPainter {
   final double xRange, yMin, yMax;
   final Map<double, List<double>> points;
   final int? hoverPosition;
   final List<Offset> crosspoints;
 
-  MyCustomPainter(
+  GraphPainter(
       {super.repaint,
       required this.xRange,
       required this.yMin,
@@ -93,7 +93,7 @@ class Graph extends StatelessWidget {
     final valueProvider = context.watch<ValuesProvider>();
     final hoverPosProvider = context.watch<HoverPosition>();
     return CustomPaint(
-      painter: MyCustomPainter(
+      painter: GraphPainter(
         xRange: valueProvider.xRange,
         yMin: valueProvider.yMin,
         yMax: valueProvider.yMax,
