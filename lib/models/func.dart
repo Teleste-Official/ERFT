@@ -35,6 +35,7 @@ class Func {
 
     while (index > 0) {
       final right = string.substring(index + 1);
+      // tryParse instead of parse to avoid throwing
       if (!variables.contains(right) && double.tryParse(right) == null) {
         return '$right is not a number/variable';
       }

@@ -38,7 +38,7 @@ class PolyLine extends ChangeNotifier {
     return sqrt(pow((p1.dx - p2.dx), 2) + pow((p1.dy - p2.dy), 2));
   }
 
-  /// Retuns index in [points] that is closest to [p] and distance.
+  /// Retuns index in [points] (first element) that is closest to [p] and distance (second element).
   static List<dynamic> closestTo(Offset p, List<Offset> points) {
     var distances =
         points.map((point) => distanceBetweenPoints(point, p)).toList();

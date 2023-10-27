@@ -83,7 +83,7 @@ class _DrawingToolState extends State<DrawingTool> {
   Widget build(BuildContext context) {
     final polylineProvider = context.watch<PolyLine>();
     final hoverPosProvider = context.watch<HoverPosition>();
-    final valuesProvider = context.watch<ValuesProvider>();
+    final valuesProvider = context.watch<ValueProvider>();
     final values = valuesProvider.points;
     final hoverPos = hoverPosProvider.value;
 
@@ -127,7 +127,7 @@ class _DrawingToolState extends State<DrawingTool> {
                         )),
             ),
           ),
-        ),        
+        ),
         Positioned(
             top: hoverPos != null && _path.points.length > hoverPos
                 ? _path.points[hoverPos].dy - 10.0
@@ -195,8 +195,10 @@ class PathPainter extends CustomPainter {
                 text: 'cp${i + 1}',
                 style: const TextStyle(color: Colors.black)));
         textPainter.layout();
-        textPainter.paint(canvas,
-            Offset(crossPoints[i]!.dx - (textPainter.width / 2), crossPoints[i]!.dy + 4.0));
+        textPainter.paint(
+            canvas,
+            Offset(crossPoints[i]!.dx - (textPainter.width / 2),
+                crossPoints[i]!.dy + 4.0));
       }
     }
   }

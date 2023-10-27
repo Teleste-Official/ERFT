@@ -90,7 +90,7 @@ class Graph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final valueProvider = context.watch<ValuesProvider>();
+    final valueProvider = context.watch<ValueProvider>();
     final hoverPosProvider = context.watch<HoverPosition>();
     return CustomPaint(
       painter: GraphPainter(

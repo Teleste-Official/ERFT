@@ -22,22 +22,31 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => Import()),
+
+        // Update [FunctionProvider] when [Import] has changed.
+
         ChangeNotifierProxyProvider<Import, FunctionProvider>(
           create: (_) => FunctionProvider([]),
-          update: (_, Import import, previous) {            
+          update: (_, Import import, previous) {
             return import.functions ?? previous ?? FunctionProvider([]);
           },
         ),
+
+        // Update [PolyLine] when [Import] has changed.
+
         ChangeNotifierProxyProvider<Import, PolyLine>(
           create: (_) => PolyLine([]),
-          update: (_, Import import, previous) {            
+          update: (_, Import import, previous) {
             return import.line ?? previous ?? PolyLine([]);
           },
         ),
         ChangeNotifierProvider(create: (_) => HoverPosition()),
-        ProxyProvider2<PolyLine, FunctionProvider, ValuesProvider>(
+
+        // Update [ValueProvider] when [PolyLine] or [FunctionProvider] has changed.
+
+        ProxyProvider2<PolyLine, FunctionProvider, ValueProvider>(
           update: (_, polyLine, funcProvider, __) {
-            return ValuesProvider(polyLine, funcProvider.functions);
+            return ValueProvider(polyLine, funcProvider.functions);
           },
         )
       ],
@@ -60,10 +69,11 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // re-render on import
-    final provider = context.watch<Import>();   
+    final provider = context.watch<Import>();
     return Column(
       children: [
         Expanded(
+          // [DrawingTool] and [Graph] twice the height of [FunctionInput] and [ImportScreen]
           flex: 2,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -74,8 +84,8 @@ class MainScreen extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(border: Border.all()),
                       child: DrawingTool(
-                          key: GlobalKey(),
-                          imported: provider.line?.points),
+                        // key needed to re-render properly
+                          key: GlobalKey(), imported: provider.line?.points),
                     )),
               ),
               Expanded(

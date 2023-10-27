@@ -10,7 +10,6 @@ import '../models/polyline.dart';
 class Import extends ChangeNotifier {
   PolyLine? line;
   FunctionProvider? functions;
-  String? path;
 
   Future<void> load(String newPath, Function(Object?) onError) async {
     try {
@@ -19,7 +18,6 @@ class Import extends ChangeNotifier {
       final json = jsonDecode(contents);
       line = PolyLine.fromJson(json);
       functions = FunctionProvider.fromJson(json);
-      path = newPath;
       notifyListeners();
     } on PathNotFoundException catch (e) {
       log('Error reading from $newPath', error: e);

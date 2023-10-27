@@ -6,20 +6,20 @@ import '../models/func.dart';
 import '../models/polyline.dart';
 import '../models/crosspoint.dart';
 
-class ValuesProvider {
+class ValueProvider {
   final PolyLine line;
   final List<Func> functions;
   late final Map<double, List<double>> points;
   late final List<Crosspoint> crosspoints;
 
-  ValuesProvider(this.line, this.functions) {
+  ValueProvider(this.line, this.functions) {
     points = _calculatePoints();
     crosspoints = _calculateCrosspoints();
   }
 
   List<String> get names {
     return functions.map((func) => func.name).toList(growable: false);
-  } 
+  }
 
   double get xRange {
     return points.isEmpty ? double.nan : points.keys.last;
@@ -51,7 +51,7 @@ class ValuesProvider {
     return result;
   }
 
-   // key: x-value, value: y-values
+  // key: x-value, value: y-values
   Map<double, List<double>> _calculatePoints() {
     final Map<double, List<double>> result = {};
     for (int i = 0; i < line.length; i++) {
