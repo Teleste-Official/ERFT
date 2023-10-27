@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 import 'models/hover_position.dart';
@@ -12,6 +13,7 @@ import 'widgets/graph.dart';
 import 'widgets/import.dart';
 
 void main() {
+  debugRepaintRainbowEnabled = true;
   runApp(const MyApp());
 }
 
@@ -84,8 +86,9 @@ class MainScreen extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(border: Border.all()),
                       child: DrawingTool(
-                        // key needed to re-render properly
-                          key: GlobalKey(), imported: provider.line?.points),
+                          // key needed to re-render properly
+                          key: GlobalKey(),
+                          imported: provider.line?.points),
                     )),
               ),
               Expanded(

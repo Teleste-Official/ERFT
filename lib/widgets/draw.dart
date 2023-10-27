@@ -82,7 +82,7 @@ class _DrawingToolState extends State<DrawingTool> {
   @override
   Widget build(BuildContext context) {
     final polylineProvider = context.watch<PolyLine>();
-    final hoverPosProvider = context.watch<HoverPosition>();
+    final hoverPosProvider = context.read<HoverPosition>();
     final valuesProvider = context.watch<ValueProvider>();
     final values = valuesProvider.points;
     final hoverPos = hoverPosProvider.value;
@@ -106,26 +106,22 @@ class _DrawingToolState extends State<DrawingTool> {
               });
             }
           },
+          // Avoid unnecessary repaints using [RepaintBoundary]
           child: RepaintBoundary(
-            child: Container(
-              color: Colors.transparent,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: CustomPaint(
-                  painter: PathPainter(
-                      points: _clearPressed
-                          ? []
-                          : (_drawing ? _path.points : polylineProvider.points),
-                      crossPoints: crosspoints),
-                  child: _clearPressed
-                      ? const SizedBox.shrink()
-                      : MouseRegion(
-                          onHover: (event) => onHover(event,
-                              onLine: (position) =>
-                                  hoverPosProvider.value = position,
-                              onDistant: () => hoverPosProvider.value = null),
-                        )),
-            ),
+            child: CustomPaint(
+                painter: PathPainter(
+                    points: _clearPressed
+                        ? []
+                        : (_drawing ? _path.points : polylineProvider.points),
+                    crossPoints: crosspoints),
+                child: _clearPressed
+                    ? const SizedBox.expand()
+                    : MouseRegion(
+                        onHover: (event) => onHover(event,
+                            onLine: (position) =>
+                                hoverPosProvider.value = position,
+                            onDistant: () => hoverPosProvider.value = null),
+                      )),
           ),
         ),
         Positioned(

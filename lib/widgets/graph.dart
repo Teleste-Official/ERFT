@@ -92,31 +92,33 @@ class Graph extends StatelessWidget {
   Widget build(BuildContext context) {
     final valueProvider = context.watch<ValueProvider>();
     final hoverPosProvider = context.watch<HoverPosition>();
-    return CustomPaint(
-      painter: GraphPainter(
-        xRange: valueProvider.xRange,
-        yMin: valueProvider.yMin,
-        yMax: valueProvider.yMax,
-        points: valueProvider.points,
-        hoverPosition: hoverPosProvider.value,
-        crosspoints: valueProvider.crosspoints
-            .map((e) => e.point)
-            .toList(growable: false),
-      ),
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children:
-            hoverPosProvider.value != null && valueProvider.functions.isNotEmpty
-                ? [
-                    Positioned(
-                        top: 8.0,
-                        child: ValuePopUp(
-                            names: valueProvider.names,
-                            values: valueProvider.points.entries
-                                .elementAt(hoverPosProvider.value!)
-                                .value))
-                  ]
-                : [],
+    return RepaintBoundary(
+      child: CustomPaint(
+        painter: GraphPainter(
+          xRange: valueProvider.xRange,
+          yMin: valueProvider.yMin,
+          yMax: valueProvider.yMax,
+          points: valueProvider.points,
+          hoverPosition: hoverPosProvider.value,
+          crosspoints: valueProvider.crosspoints
+              .map((e) => e.point)
+              .toList(growable: false),
+        ),
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children:
+              hoverPosProvider.value != null && valueProvider.functions.isNotEmpty
+                  ? [
+                      Positioned(
+                          top: 8.0,
+                          child: ValuePopUp(
+                              names: valueProvider.names,
+                              values: valueProvider.points.entries
+                                  .elementAt(hoverPosProvider.value!)
+                                  .value))
+                    ]
+                  : [],
+        ),
       ),
     );
   }
