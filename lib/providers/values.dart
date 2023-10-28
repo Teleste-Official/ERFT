@@ -9,6 +9,7 @@ import '../models/crosspoint.dart';
 class ValueProvider {
   final PolyLine line;
   final List<Func> functions;
+  /// key: x-value, value: function values
   late final Map<double, List<double>> points;
   late final List<Crosspoint> crosspoints;
 
@@ -51,7 +52,6 @@ class ValueProvider {
     return result;
   }
 
-  // key: x-value, value: y-values
   Map<double, List<double>> _calculatePoints() {
     final Map<double, List<double>> result = {};
     for (int i = 0; i < line.length; i++) {
@@ -68,27 +68,27 @@ class ValueProvider {
   List<Crosspoint> _calculateCrosspoints() {
     if (points.isEmpty) return [];
     final List<Crosspoint> result = [];
-    for (int i = 0; i < functions.length - 1; i++) {
-      for (int j = 0; j < points.length - 1; j++) {
-        final x0 = points.keys.elementAt(j);
-        final x1 = points.keys.elementAt(j + 1);
-        final iy0 = points.entries.elementAt(j).value[i];
-        final iy1 = points.entries.elementAt(j + 1).value[i];
-        for (int k = i + 1; k < functions.length; k++) {
-          final ky0 = points.entries.elementAt(j).value[k];
-          final ky1 = points.entries.elementAt(j + 1).value[k];
-          if (iy0.isFinite && iy1.isFinite && ky0.isFinite && ky1.isFinite) {
-            if (iy0 > ky0 && iy1 < ky1) {
-              final intersection = _intersection(x0, x1, iy0, iy1, ky0, ky1);
+    for (int f = 0; f < functions.length - 1; f++) {
+      for (int x = 0; x < points.length - 1; x++) {
+        final x0 = points.keys.elementAt(x);
+        final x1 = points.keys.elementAt(x + 1);
+        final fy0 = points.entries.elementAt(x).value[f];
+        final fy1 = points.entries.elementAt(x + 1).value[f];
+        for (int g = f + 1; g < functions.length; g++) {
+          final gy0 = points.entries.elementAt(x).value[g];
+          final gy1 = points.entries.elementAt(x + 1).value[g];
+          if (fy0.isFinite && fy1.isFinite && gy0.isFinite && gy1.isFinite) {
+            if (fy0 > gy0 && fy1 < gy1) {
+              final intersection = _intersection(x0, x1, fy0, fy1, gy0, gy1);
               if (intersection != null) {
                 result.add(
-                    Crosspoint(Offset(intersection[0], intersection[1]), j));
+                    Crosspoint(Offset(intersection[0], intersection[1]), x));
               }
-            } else if (iy0 < ky0 && iy1 > ky1) {
-              final intersection = _intersection(x0, x1, ky0, ky1, iy0, iy1);
+            } else if (fy0 < gy0 && fy1 > gy1) {
+              final intersection = _intersection(x0, x1, gy0, gy1, fy0, fy1);
               if (intersection != null) {
                 result.add(
-                    Crosspoint(Offset(intersection[0], intersection[1]), j));
+                    Crosspoint(Offset(intersection[0], intersection[1]), x));
               }
             }
           }

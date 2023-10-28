@@ -13,6 +13,7 @@ class ImportScreen extends StatelessWidget {
   const ImportScreen({super.key});
 
   Future<String?> importPath() async {
+    // If FilePicker doesn't work in linux debug build, try flutter build linux --release instead.
     FilePickerResult? result = await FilePicker.platform
         .pickFiles(type: FileType.custom, allowedExtensions: ['json']);
     return result?.files.single.path;

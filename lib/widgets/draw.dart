@@ -90,7 +90,7 @@ class _DrawingToolState extends State<DrawingTool> {
     final crosspoints = _clearPressed || _drawing
         ? <Offset>[]
         : valuesProvider.crosspoints
-            .map((cp) => crosspointPosition(cp, polylineProvider))
+            .map((cp) => crosspointPosition(cp, _path))
             .toList(growable: false);
 
     return Stack(
@@ -112,7 +112,7 @@ class _DrawingToolState extends State<DrawingTool> {
                 painter: PathPainter(
                     points: _clearPressed
                         ? []
-                        : (_drawing ? _path.points : polylineProvider.points),
+                        : _path.points,
                     crossPoints: crosspoints),
                 child: _clearPressed
                     ? const SizedBox.expand()
@@ -171,6 +171,7 @@ class PathPainter extends CustomPainter {
     for (int i = 0; i < points.length - 1; i++) {
       Offset startPoint = points[i];
       Offset endPoint = points[i + 1];
+      // Draw only lines that are within the borders of canvas
       if (startPoint.dx >= 0 &&
           startPoint.dy >= 0 &&
           endPoint.dx >= 0 &&

@@ -33,7 +33,7 @@ class PolyLine extends ChangeNotifier {
         .map((e) => Offset(e['x'] as double, e['y'] as double))
         .toList());
   }
-
+  
   static double distanceBetweenPoints(Offset p1, Offset p2) {
     return sqrt(pow((p1.dx - p2.dx), 2) + pow((p1.dy - p2.dy), 2));
   }

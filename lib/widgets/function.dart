@@ -47,8 +47,7 @@ class _FunctionInputState extends State<FunctionInput> {
                   ? functions[index]
                   : Func('f${provider.functions.length}', ''),
               lastItem: index == functions.length,
-              onAdd: (func) => provider.addFunction(func)
-                ,
+              onAdd: (func) => provider.addFunction(func),
               onChange: (func) => provider.changeFunction(index, func),
               onRemove: () => provider.removeFunction(index),
               focus: index == functions.length ? _focusNode : null,
@@ -91,28 +90,28 @@ class _FunctionListItemState extends State<FunctionListItem> {
   final _funcController = TextEditingController();
   
   void onAdd() {
-    final simplified = Func.format(_funcController.text);
+    final formatted = Func.format(_funcController.text);
     if (Func.validate(
-      simplified,
+      formatted,
       onError: (errorMessage) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Failed to add function ${_nameController.text}: $errorMessage')));
       },
     )) {
-      widget.onAdd(Func(_nameController.text, simplified));
+      widget.onAdd(Func(_nameController.text, formatted));
     }
   }
 
   void onChange() {
-    final simplified = Func.format(_funcController.text);
+    final formatted = Func.format(_funcController.text);
     if (Func.validate(
-      simplified,
+      formatted,
       onError: (errorMessage) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Failed to change function ${_nameController.text}: $errorMessage')));
       },
     )) {
-      widget.onChange(Func(_nameController.text, simplified));
+      widget.onChange(Func(_nameController.text, formatted));
     }
   }
 
