@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -82,7 +83,7 @@ class _DrawingToolState extends State<DrawingTool> {
   @override
   Widget build(BuildContext context) {
     final polylineProvider = context.watch<PolyLine>();
-    final hoverPosProvider = context.read<HoverPosition>();
+    final hoverPosProvider = context.watch<HoverPosition>();
     final valuesProvider = context.watch<ValueProvider>();
     final values = valuesProvider.points;
     final hoverPos = hoverPosProvider.value;
@@ -110,9 +111,7 @@ class _DrawingToolState extends State<DrawingTool> {
           child: RepaintBoundary(
             child: CustomPaint(
                 painter: PathPainter(
-                    points: _clearPressed
-                        ? []
-                        : _path.points,
+                    points: _clearPressed ? [] : _path.points,
                     crossPoints: crosspoints),
                 child: _clearPressed
                     ? const SizedBox.expand()
@@ -167,21 +166,13 @@ class PathPainter extends CustomPainter {
   PathPainter({super.repaint, required this.points, required this.crossPoints});
   @override
   void paint(Canvas canvas, Size size) {
+    // Draw only lines that are within the borders of canvas
+    canvas.clipRect(Rect.fromPoints(const Offset(0, 0), Offset(size.width, size.height)));
     Paint paint = Paint();
     for (int i = 0; i < points.length - 1; i++) {
       Offset startPoint = points[i];
-      Offset endPoint = points[i + 1];
-      // Draw only lines that are within the borders of canvas
-      if (startPoint.dx >= 0 &&
-          startPoint.dy >= 0 &&
-          endPoint.dx >= 0 &&
-          endPoint.dy >= 0 &&
-          startPoint.dx <= size.width &&
-          startPoint.dy <= size.height &&
-          endPoint.dx <= size.width &&
-          endPoint.dy <= size.height) {
-        canvas.drawLine(startPoint, endPoint, paint);
-      }
+      Offset endPoint = points[i + 1];      
+      canvas.drawLine(startPoint, endPoint, paint);      
     }
     for (int i = 0; i < crossPoints.length; i++) {
       if (crossPoints[i] != null) {
@@ -201,7 +192,7 @@ class PathPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  bool shouldRepaint(PathPainter oldDelegate) {
+    return !listEquals(points, oldDelegate.points) || !listEquals(crossPoints, oldDelegate.crossPoints);
   }
 }
