@@ -12,18 +12,19 @@ import 'widgets/function.dart';
 import 'widgets/graph.dart';
 import 'widgets/import.dart';
 
-void main() {
+void main(List<String> args) {
 //  debugRepaintRainbowEnabled = true;
-  runApp(const MyApp());
+  runApp(MyApp(args.isNotEmpty ? args[0] : null));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String? path;
+  const MyApp(this.path, {super.key});
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => Import()),
+        ChangeNotifierProvider(create: (_) => Import(path)),
 
         // Update [FunctionProvider] when [Import] has changed.
 

@@ -8,8 +8,15 @@ import 'package:line_function_calculator/providers/function.dart';
 import '../models/polyline.dart';
 
 class Import extends ChangeNotifier {
+  final String? path;
   PolyLine? line;
   FunctionProvider? functions;
+
+  Import(this.path) {
+    if (path != null) {
+      load(path!, (_) => {});
+    }
+  }
 
   Future<void> load(String newPath, Function(Object?) onError) async {
     try {
@@ -22,8 +29,7 @@ class Import extends ChangeNotifier {
     } on PathNotFoundException catch (e) {
       log('Error reading from $newPath', error: e);
       onError(e);
-    }
-    on FormatException catch (e) {
+    } on FormatException catch (e) {
       log('Error reading from $newPath', error: e);
       onError(e);
     }
